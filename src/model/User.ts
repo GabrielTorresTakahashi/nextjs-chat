@@ -1,6 +1,5 @@
 import mongoose from "@/database";
-import { CallbackError } from "mongoose";
-import bcrypt from 'bcrypt'
+import { hash } from "bcryptjs";
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -20,9 +19,21 @@ const userSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    }
 });
 
-// Antes de salvar o usuário, criptografar a senha usando bcrypt
+userSchema.pre('save', async function (next) {
+    this.updatedAt = new Date();
+    next()
+})
+
 userSchema.pre('save', async function (next) {
     const user = this;
 
@@ -31,23 +42,12 @@ userSchema.pre('save', async function (next) {
 
     try {
         // Gerar o hash da senha com uma "força" de 10
-        const hash = await bcrypt.hash(user.senha, 10);
-        user.senha = hash;
+        const hashed = await hash(user.senha, process.env.MY_PASSWORD || "");
+        user.senha = hashed;
         next();
     } catch (error: any) {
         return next(error);
     }
 });
 
-// Método para comparar senhas durante o login
-userSchema.methods.comparePassword = async function (candidatePassword) {
-    try {
-        return await bcrypt.compare(candidatePassword, this.senha);
-    } catch (error) {
-        throw error;
-    }
-};
-
-const User = mongoose.model('User', userSchema);
-
-export default User;
+export default mongoose.models.User || mongoose.model('User', userSchema);

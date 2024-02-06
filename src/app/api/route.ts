@@ -1,8 +1,6 @@
-import axios from "axios"
+import User from "@/model/User"
 
 export async function GET() {
-    const res = await axios.get("https://pokeapi.co/api/v2/pokemon/ditto")
-    const data = res.data
 
-    return Response.json({ data })
+    return Response.json({ hello: "server" })
 }

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-mongoose.connect(process.env.CONNECTION_STRING_MONGODB || "")
+mongoose.connect(process.env.DB_STRING || "")
     .then(() => {
         console.log("MongoDB connected at -> chat")
     })

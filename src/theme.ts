@@ -12,8 +12,8 @@ const roboto = Roboto({
 
 const theme = createTheme({
     palette: {
-      primary: purple,
-      secondary: pink,
+      primary: pink,
+      secondary: purple,
     }
   })
 
