@@ -1,20 +1,16 @@
 'use client';
 import { pink, purple } from '@mui/material/colors';
-import { createTheme } from '@mui/material/styles';
+import { ThemeOptions, createTheme } from '@mui/material/styles';
 
 import { Roboto } from 'next/font/google';
 
-const roboto = Roboto({
-  weight: ['300', '400', '500', '700'],
-  subsets: ['latin'],
-  display: 'swap',
-});
+const options: ThemeOptions = {
+  palette: {
+    mode: 'dark'
+  }
+}
 
-const theme = createTheme({
-    palette: {
-      primary: pink,
-      secondary: purple,
-    }
-  })
+const theme = createTheme(options);
+
 
 export default theme;

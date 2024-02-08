@@ -1,6 +1,6 @@
-import User from "@/model/User"
+import ChatMessage from "@/model/ChatMessage";
 import { NextRequest } from "next/server";
-import { object, string } from "yup"
+import { array, object, string } from "yup";
 
 export async function GET(request: NextRequest) {
     try {
@@ -13,9 +13,9 @@ export async function GET(request: NextRequest) {
             }
         }, {});
 
-        const result = await User.find(filterObj ?? {});
+        const messages = await ChatMessage.find(filterObj ?? {});
 
-        return Response.json(result)
+        return Response.json(messages)
     } catch (error) {
         return new Response("Erro ao encontrar mensagens: " + error, { status: 500 })
     }
@@ -23,37 +23,30 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: Request) {
     const bodySchema = object({
-        email: string().required(),
-        nome: string().required(),
-        senha: string().required(),
+        text: string().required(),
+        sender: string().required(),
     })
     try {
-        const body = await request.json()
+        const body = await request.json();
         await bodySchema.validate(body)
-        const exists = await User.findOne({ email: body.email });
-        if (exists) {
-            return new Response(`Erro ao criar usuário: Usuário já existe`, { status: 404 })
-        }
-        const created = await User.create(body);
-
-        return Response.json(created);
-    } catch (error: any) {
-        return new Response(`Erro ao criar usuário: ${error}`, { status: 500 })
+        const group = await ChatMessage.create(body);
+        return Response.json(group)
+    } catch (error) {
+        return new Response("Erro ao criar mensagens: " + error, { status: 500 })
     }
 }
 
 export async function PATCH(request: Request) {
     const bodySchema = object({
-        email: string().required(),
-        nome: string().required(),
-        senha: string().required(),
+        text: string().required(),
+        sender: string().required(),
     })
     try {
         const { searchParams } = new URL(request.url)
         const _id = searchParams.get('_id')
         const body = await request.json()
         await bodySchema.validate(body)
-        const update = await User.findOneAndUpdate({ _id: _id }, {
+        const update = await ChatMessage.findOneAndUpdate({ _id: _id }, {
             $set: {
                 ...body
             }
@@ -61,10 +54,9 @@ export async function PATCH(request: Request) {
 
         return Response.json(update);
     } catch (error: any) {
-        return new Response(`Erro ao atualizar usuário: ${error}`, { status: 500 })
+        return new Response(`Erro ao atualizar mensagem: ${error}`, { status: 500 })
     }
 }
-
 
 export async function DELETE(request: Request) {
     const bodySchema = object({
@@ -73,10 +65,10 @@ export async function DELETE(request: Request) {
     try {
         const body = await request.json()
         await bodySchema.validate(body)
-        const deleted = await User.findOneAndDelete(body);
+        const deleted = await ChatMessage.findOneAndDelete(body);
 
         return Response.json(deleted);
     } catch (error: any) {
-        return new Response(`Erro ao deletar usuário: ${error}`, { status: 500 })
+        return new Response(`Erro ao deletar mensagem: ${error}`, { status: 500 })
     }
 }
