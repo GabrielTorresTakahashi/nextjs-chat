@@ -13,6 +13,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Snackbar } from '@mui/material';
+import chatApi from '../services/chatApi';
 
 
 export default function SignUp() {
@@ -30,7 +31,7 @@ export default function SignUp() {
             senha: data.get('password'),
         }
         try {
-            await axios.post('/api/user', toSave);
+            await chatApi.post('/api/auth/signup', toSave);
             navigation.push('/login');
         } catch (error) {
             console.error(error)

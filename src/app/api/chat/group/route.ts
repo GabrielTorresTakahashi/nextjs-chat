@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: Request) {
     const bodySchema = object({
-        nome: string().required(),
+        name: string().required(),
         users: array().of(string()).default([]),
     })
     try {
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
     const bodySchema = object({
-        nome: string().required(),
+        name: string().required(),
         users: array().of(string()).default([]),
     })
     try {
@@ -58,14 +58,14 @@ export async function PATCH(request: Request) {
     }
 }
 
-export async function DELETE(request: Request) {
-    const bodySchema = object({
+export async function DELETE(request: NextRequest) {
+    const querySchema = object({
         _id: string().required()
     })
     try {
-        const body = await request.json()
-        await bodySchema.validate(body)
-        const deleted = await GroupChat.findOneAndDelete(body);
+        const { searchParams } = new URL(request.url)
+        const _id = searchParams.get('_id')
+        const deleted = await GroupChat.findOneAndDelete({ _id });
 
         return Response.json(deleted);
     } catch (error: any) {

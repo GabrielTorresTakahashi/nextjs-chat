@@ -6,7 +6,9 @@ import { Roboto } from 'next/font/google';
 
 const options: ThemeOptions = {
   palette: {
-    mode: 'dark'
+    mode: 'dark',
+    primary: purple,
+    secondary: pink,
   }
 }
 

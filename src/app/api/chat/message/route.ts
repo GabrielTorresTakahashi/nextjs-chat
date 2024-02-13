@@ -25,6 +25,7 @@ export async function POST(request: Request) {
     const bodySchema = object({
         text: string().required(),
         sender: string().required(),
+        to: string().required(),
     })
     try {
         const body = await request.json();
@@ -40,6 +41,7 @@ export async function PATCH(request: Request) {
     const bodySchema = object({
         text: string().required(),
         sender: string().required(),
+        to: string().required(),
     })
     try {
         const { searchParams } = new URL(request.url)

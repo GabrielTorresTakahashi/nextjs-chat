@@ -1,5 +1,5 @@
 import mongoose from "@/database";
-import { hash } from "bcryptjs";
+import { genSalt, hash } from "bcryptjs";
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -37,15 +37,15 @@ userSchema.pre('save', async function (next) {
 userSchema.pre('save', async function (next) {
     const user = this;
 
-    // Apenas criptografar a senha se ela foi modificada ou é um novo usuário
     if (!user.isModified('senha')) return next();
 
     try {
-        // Gerar o hash da senha com uma "força" de 10
-        const hashed = await hash(user.senha, process.env.MY_PASSWORD || "");
+        const salt = await genSalt(10);
+        const hashed = await hash(user.senha, salt);
         user.senha = hashed;
         next();
     } catch (error: any) {
+        console.error(error)
         return next(error);
     }
 });

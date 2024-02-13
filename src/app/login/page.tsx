@@ -13,12 +13,14 @@ import axios from 'axios';
 import { FormEvent, useState } from 'react';
 import { LoadingButton } from '@mui/lab';
 import { Snackbar } from '@mui/material';
-// TODO remove, this demo shouldn't need to reset the theme.
+import chatApi from '../services/chatApi';
+import useStorage from '@/hooks/useStorage';
 
 export default function SignIn() {
   const router = useRouter();
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
+  const storage = useStorage();
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -28,10 +30,10 @@ export default function SignIn() {
       senha: data.get('password'),
     };
     setLoading(true);
-    axios.post('/api/auth/login', loginObject)
+    chatApi.post('/api/auth/login', loginObject)
       .then((res) => {
         sessionStorage.setItem("token", res.data.token)
-        router.push('/welcome');
+        router.push('/chats');
       })
       .catch((err: any) => {
         console.log(err)

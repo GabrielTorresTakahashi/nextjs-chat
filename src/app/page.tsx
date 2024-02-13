@@ -10,7 +10,7 @@ const Home = () => {
     
     if (token) {
       // Se estiver logado
-      router.push('/welcome');
+      router.push('/chats');
     } else {
       // Se não estiver logado
       router.push('/login');
