@@ -4,6 +4,7 @@ import chatApi from '../services/chatApi';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { socket } from '../services/socket';
+import ChatMessage from './ChatMessage';
 
 type ChatHistoryProps = {
     chatId: string;
@@ -70,7 +71,7 @@ function ChatHistory({ chatId, setActiveGroup, chats, setChats }: ChatHistoryPro
                     console.log(response.data)
                 })
             })
-            const newMessage = { sender: me, to: chatId, text: messageText }
+            const newMessage = { sender: me, to: chatId, text: messageText, createdAt: new Date() }
             setChatMessages([...chatMessages, newMessage]);
         })
         setMessageText("")
@@ -137,44 +138,8 @@ function ChatHistory({ chatId, setActiveGroup, chats, setChats }: ChatHistoryPro
                 }}
             >
                 {chatInfo && chatMessages.map((message: any, index: number) => {
-                    if (chatMessages[index - 1] && chatMessages[index - 1].sender._id === message.sender._id) {
-                        return (<Box key={index}
-                            sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: message.sender._id === me._id ? "flex-end" : "flex-start",
-                            }}>
-                            <Box sx={{
-                                padding: 1,
-                                borderRadius: 4,
-                                borderTopLeftRadius: message.sender._id === me._id ? "4" : 0,
-                                borderTopRightRadius: message.sender._id === me._id ? 0 : "4",
-                                borderBottomLeftRadius: message.sender._id === me._id ? "4" : 0,
-                                borderBottomRightRadius: message.sender._id === me._id ? 0 : "4",
-                                bgcolor: message.sender._id === me._id ? theme.palette.primary.dark : theme.palette.secondary.dark,
-                            }}>
-                                <Typography>{message.text}</Typography>
-                            </Box>
-                        </Box>)
-                    } else {
-                        return (<Box key={index}
-                            sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: message.sender._id === me._id ? "flex-end" : "flex-start",
-                            }}>
-                            <Typography variant="overline">{message.sender.nome}</Typography>
-                            <Box sx={{
-                                padding: 1,
-                                borderRadius: 4,
-                                borderBottomLeftRadius: message.sender._id === me._id ? "4" : 0,
-                                borderBottomRightRadius: message.sender._id === me._id ? 0 : "4",
-                                bgcolor: message.sender._id === me._id ? theme.palette.primary.dark : theme.palette.secondary.dark,
-                            }}>
-                                <Typography>{message.text}</Typography>
-                            </Box>
-                        </Box>)
-                    }
+                    const sameUser = index > 0 && chatMessages[index - 1] && chatMessages[index - 1].sender._id === message.sender._id;
+                    return <ChatMessage me={me} message={message} sameUser={sameUser} />
                 }
                 )}
                 <div ref={chatEndRef} />

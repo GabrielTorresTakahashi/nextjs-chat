@@ -59,13 +59,10 @@ export async function PATCH(request: Request) {
 }
 
 export async function DELETE(request: NextRequest) {
-    const querySchema = object({
-        _id: string().required()
-    })
     try {
         const { searchParams } = new URL(request.url)
         const _id = searchParams.get('_id')
-        const deleted = await GroupChat.findOneAndDelete({ _id });
+        const deleted = await GroupChat.findOneAndDelete({ _id }, { autopopulate: false });
 
         return Response.json(deleted);
     } catch (error: any) {

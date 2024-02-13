@@ -12,6 +12,16 @@ const groupChatSchema = new mongoose.Schema({
         type: String,
         default: "",
     },
+    private: {
+        type: Boolean,
+        default: false,
+    },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null,
+        autopopulate: true,
+    },
     users: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -39,6 +49,12 @@ groupChatSchema.plugin(mongooseAutoPopulate);
 groupChatSchema.pre("find", (next) => {
     ChatMessage;
     User;
+    next();
+})
+
+groupChatSchema.post("findOneAndDelete", (doc, next) => {
+    console.log("this.getQuery()")
+    ChatMessage.deleteMany({ _id: { $in: doc.messages } }).exec();
     next();
 })
 
