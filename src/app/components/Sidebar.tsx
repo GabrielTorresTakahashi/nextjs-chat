@@ -63,11 +63,11 @@ function Sidebar({ chats, setChats, setActiveGroup, me }: SidebarProps) {
                 flexDirection: "column",
             }}
         >
-            <Paper sx={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", padding: 2, width: "100%", height: "15svh" }}>
+            <Paper sx={{width: "100%", padding: 2, display: "flex", justifyContent: "center", height: "15svh" }}>
                 <Typography variant='h5'>CONVERSAS</Typography>
                 <Divider />
             </Paper>
-            <List sx={{ width: "100%", overflowY: "scroll", height: "100%", scrollbarWidth: "none" }}>
+            <List sx={{ width: "100%", overflowY: "scroll", scrollbarWidth: "none" }}>
                 {chats.map((chat: any, index: number) => (
                     <ListItem key={index} disablePadding>
                         <ListItemButton onClick={() => setActiveGroup(chat._id)}>
