@@ -53,7 +53,6 @@ groupChatSchema.pre("find", (next) => {
 })
 
 groupChatSchema.post("findOneAndDelete", (doc, next) => {
-    console.log("this.getQuery()")
     ChatMessage.deleteMany({ _id: { $in: doc.messages } }).exec();
     next();
 })

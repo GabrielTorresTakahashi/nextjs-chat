@@ -35,7 +35,7 @@ function ChatMessage({ sameUser, message, me }: ChatMessageProps) {
                     textOverflow: "ellipsis",
                     overflowWrap: "break-word",
                     paddingLeft: !sentByMe ? 1 : 0,
-                    paddingRight: sentByMe ? 4 : 4.5,
+                    paddingRight: 5,
                 }}>
                     {message.text}
                 </Typography>
@@ -45,7 +45,7 @@ function ChatMessage({ sameUser, message, me }: ChatMessageProps) {
                         textOverflow: "ellipsis",
                         overflowWrap: "break-word",
                         alignSelf: "flex-end",
-                        marginTop: -2,
+                        marginTop: -1,
                     }}>
                     {new Date(message.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                 </Typography>

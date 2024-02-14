@@ -36,7 +36,7 @@ export default function SignIn() {
         router.push('/chats');
       })
       .catch((err: any) => {
-        console.log(err)
+        // console.log(err)
         setOpen(true)
       })
       .finally(() => {

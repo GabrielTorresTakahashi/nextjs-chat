@@ -1,23 +1,22 @@
-import { Autocomplete, Box, Button, Collapse, Container, Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Modal, Paper, TextField, Typography, useTheme } from '@mui/material'
-import React, { Fragment, useContext, useEffect, useState } from 'react'
+import { Box, Button, Collapse, Divider, FormControlLabel, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Modal, Paper, Switch, TextField, Typography } from '@mui/material'
+import React, { useState } from 'react'
 import chatApi from '../services/chatApi';
-import ChatContext from '../chats/ChatContext';
+import LockIcon from '@mui/icons-material/Lock';
 import GroupsIcon from '@mui/icons-material/Groups';
-import { useRouter } from 'next/navigation';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { useRouter } from 'next/navigation';
 
 type SidebarProps = {
     chats: any[];
     setChats: React.Dispatch<React.SetStateAction<any[]>>;
     setActiveGroup: React.Dispatch<React.SetStateAction<any>>;
+    me: any;
 }
 
-function Sidebar({ chats, setChats, setActiveGroup }: SidebarProps) {
-    const { } = useContext(ChatContext);
+function Sidebar({ chats, setChats, setActiveGroup, me }: SidebarProps) {
     const navigator = useRouter();
-    const theme = useTheme()
     const [open, setOpen] = useState(false)
-    const [suggestions, setSuggestions] = useState<any[]>([]);
+    const [privateGroup, setPrivateGroup] = useState(false);
     const [creatingGroup, setCreatingGroup] = useState(false);
     const [groupName, setGroupName] = useState("");
     const [groupDescription, setGroupDescription] = useState("")
@@ -25,15 +24,6 @@ function Sidebar({ chats, setChats, setActiveGroup }: SidebarProps) {
 
     const toggleModal = () => {
         setOpen(!open)
-    }
-
-    const handleGetUsers = async () => {
-        try {
-            const resUsers = await chatApi.get(`api/user`);
-            setSuggestions(resUsers.data);
-        } catch (error) {
-            setSuggestions([]);
-        }
     }
 
     const handleCreateGroup = async (e: React.FormEvent) => {
@@ -47,6 +37,9 @@ function Sidebar({ chats, setChats, setActiveGroup }: SidebarProps) {
             const rescreated = await chatApi.post(`api/chat/group`, {
                 name: groupName,
                 description: groupDescription,
+                private: privateGroup,
+                owner: me._id,
+                users: [me._id],
             });
             setChats([...chats, rescreated.data]);
             setOpen(false)
@@ -59,12 +52,6 @@ function Sidebar({ chats, setChats, setActiveGroup }: SidebarProps) {
         sessionStorage.removeItem("token")
         navigator.push("/login")
     }
-
-    // Busca as primeiras sugestões
-    useEffect(() => {
-        handleGetUsers()
-    }, [])
-
 
     return (
         <Box
@@ -85,7 +72,7 @@ function Sidebar({ chats, setChats, setActiveGroup }: SidebarProps) {
                     <ListItem key={index} disablePadding>
                         <ListItemButton onClick={() => setActiveGroup(chat._id)}>
                             <ListItemIcon>
-                                <GroupsIcon />
+                                {chat.private ? <LockIcon /> : <GroupsIcon />}
                             </ListItemIcon>
                             <ListItemText primary={chat.name} />
                         </ListItemButton>
@@ -126,8 +113,8 @@ function Sidebar({ chats, setChats, setActiveGroup }: SidebarProps) {
                         gap: 1,
                     }}
                         in={creatingGroup}>
+                        <Typography sx={{ marginY: 1 }} variant='h5'>Novo grupo</Typography>
                         <form onSubmit={handleCreateGroup}>
-                            <Typography sx={{ marginY: 1 }} variant='h5'>Novo grupo</Typography>
                             <TextField
                                 error={error}
                                 helperText="O nome do grupo é obrigatório"
@@ -144,9 +131,20 @@ function Sidebar({ chats, setChats, setActiveGroup }: SidebarProps) {
                                 label="Descrição (opcional)"
                                 variant="outlined"
                             />
-                            <Button sx={{ marginY: 1 }} variant='contained' type='submit' onClick={handleCreateGroup}>
-                                Criar grupo
-                            </Button>
+                            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                                <FormControlLabel sx={{ marginRight: "auto" }} control={
+                                    <Switch
+                                        checked={privateGroup}
+                                        onChange={() => setPrivateGroup(!privateGroup)}
+                                    />
+                                } label="Grupo privado" />
+                                <Button sx={{ marginY: 1 }} variant='contained' type='submit' onClick={handleCreateGroup}>
+                                    Criar grupo
+                                </Button>
+                            </Box>
+                            <Collapse in={privateGroup}>
+                                <Typography>O grupo ficará visível apenas para membros e convidados</Typography>
+                            </Collapse>
                         </form>
                     </Collapse>
                 </Box>
